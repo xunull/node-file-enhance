@@ -19,18 +19,21 @@ function File(path) {
     // 当前读取的游标位置
     this.current_cursor = 0;
     // 这个lines 如果合并在一起就相当于data
+    this.lineContents = [];
     this.lines = [];
 }
 
 exports.File = File;
 
-function Line() {
-
+function Line(startIndex, endIndex, content) {
+    this.startIndex = startIndex;
+    this.endIndex = endIndex;
+    this.content = content;
 }
 
 function cacheAllLines() {
     while (this.current_cursor < this.length) {
-        lines.push(readLine());
+        lineContents.push(readLine());
     }
 }
 
@@ -45,9 +48,25 @@ function readLine() {
     if (this.current_cursor < this.length) {
         var temp_cursor = this.current_cursor;
         this.current_cursor = this.data.indexOf('\n', temp_cursor) + 1;
-        return this.data.substring(temp_cursor, this.current_cursor);
+        var content = this.data.substring(temp_cursor, this.current_cursor);
+        var line = new Line(temp_cursor, this.current_cursor, content);
+        return content;
     } else {
 
     }
+}
+
+/**
+ *  TODO
+ * 修改某行的内容(修改某一行之后,之后的所有行的坐标就都变化了)
+ * 简单的方法将line的content 替换掉后 合并lines 然后fs.writeFile 到文件中(此方法会重新写入文件)
+ * 这是简单粗暴的方法
+ * 另一个方法是精确的替替换掉指定内容(好像实现不了？linux 有pread和pwrite 没有说删除);
+ *
+ *
+ * @param  {[type]} line_number [description]
+ * @return {[type]}             [description]
+ */
+function updateSomeLine(line_number, content) {
 
 }
