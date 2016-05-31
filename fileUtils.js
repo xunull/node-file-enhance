@@ -54,6 +54,55 @@ function FileEnhanceException(message) {
     this.name = 'FileEnhanceException';
 }
 
+exports.appendFile = function(path, data) {
+    exports.assertRelative(path);
+    var deferred = Q.defer();
+    fs.appendFile(path, data, 'utf8', function(err) {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve();
+        }
+    });
+    return deferred.promise;
+};
+
+exports.watch = function(path, listener) {
+    exports.assertRelative(path);
+    fs.watch(path, function(event, filename) {
+        // event is either rename,change
+        if (undefined !== listener) {
+            listener(event, filename);
+        }
+    });
+};
+
+exports.exists = function(path, callback) {
+    exports.assertRelative(path);
+    var deferred = Q.defer();
+    fs.access(path, fs.F_OK, (err) => {
+        if (err) {
+            deferred.reject(err);
+        } else {
+            deferred.resolve();
+        }
+    });
+    return deferred.promise;
+
+    // fs.stat(path, function(err, stats) {
+    //     if (err) {
+    //         callback(false);
+    //         // if (err.errno === -2) {
+    //         //     // 文件不存在
+    //         //     callback(false);
+    //         // }
+    //     } else {
+    //         // 文件存在
+    //         callback(true);
+    //     }
+    // });
+};
+
 /**
  * 此方法可以中间跨目录创建文件
  *
