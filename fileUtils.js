@@ -1,16 +1,17 @@
 var fs = require('fs');
 var Q = require('q');
+var os_path = require('path');
 
 var logger = require('./common/logger');
 
 /**
- * 此方法可以跨目录保存文件
+ * 此方法可以跨目录保存文件(请勿使用相对路径)
  * @param  {[type]} path    [description]
  * @param  {[type]} content [description]
  * @return {[type]}         [description]
  */
 exports.saveNewFile = function(path, content) {
-
+    assertRelative(path);
     var deferred = Q.defer();
 
     var reg = /^.*\//;
@@ -41,9 +42,11 @@ exports.saveNewFile = function(path, content) {
  * @return {[type]}      [description]
  */
 exports.assertRelative = function(path) {
-    if (!path.startsWith('/')) {
+
+    if (!os_path.isAbsolute(path)) {
         throw new FileEnhanceException('path can\'t a relative path');
     }
+
 };
 
 function FileEnhanceException(message) {
@@ -61,6 +64,7 @@ function FileEnhanceException(message) {
  * @return {[type]}            [description]
  */
 var mkdir = function(path, callback) {
+    assertRelative(path);
     fs.mkdir(path, function(err) {
         if (null === err) {
             // 创建成功了
