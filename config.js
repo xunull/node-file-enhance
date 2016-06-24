@@ -3,7 +3,8 @@
  */
 
 var config = {
-    debug: true
+    debug: true,
+    projectPath:__dirname
 };
 
 module.exports = config;
